@@ -1,0 +1,39 @@
+node_modules/
+npm-debug.log*
+
+# Environment variables
+.env
+
+# Build outputs
+dist/
+build/
+out/
+*.tsbuildinfo
+
+# Compiled binary addons
+build/Release
+
+# TypeScript cache
+*.tsbuildinfo
+
+# Optional npm cache directory
+.npm
+
+# Optional eslint cache
+.eslintcache
+
+# Optional REPL history
+.node_repl_history
+
+# Output of 'npm pack'
+*.tgz
+
+
+# Temporary folders
+tmp/
+temp/
+
+
+# Editor directories and files
+.vscode/
+
