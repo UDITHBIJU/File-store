@@ -2,27 +2,69 @@ import {Request, Response} from 'express';
 import {User} from '../models/user.model';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
+import {generateOtp} from '../utils/otp.util'; 
+import {redis} from '../config/redis'; 
+import { sendOtpEmail } from '../services/mail.service';
 
 
 const JWT_SECRET = process.env.JWT_SECRET
-const signup = async (req: Request, res: Response) => {
+
+const requestOtp = async (req: Request, res: Response) => {
     const {username, email, password} = req.body;
 
     try {
         const existingUser = await User.findOne({email});
-        console.log('Existing User:', existingUser);
         if (existingUser) {
+            return res.status(400).json({message: 'User already exists'});
         }
+        const otp = generateOtp(); 
+
         const hashedPassword = await bcrypt.hash(password, 10);
-        const newUser = new User({
+        
+        const value = JSON.stringify({
             username,
             email,
             password: hashedPassword,
+            otp,
         });
-        await newUser.save();
-        res.status(201).json({message: 'User created successfully'});
+
+        await redis.set(`otp:${email}`, value, 'EX', 300); 
+
+        await sendOtpEmail(email, otp);
+        res.status(200).json({message: 'OTP sent to mail'});
+
     } catch (error) {
-        console.error('Error during signup:', error);
+        console.error('Error in request otp:', error);
+        res.status(500).json({message: 'Internal server error'});
+    }
+};
+
+const verifyOtp = async (req: Request, res: Response) => {
+    const {email, otp} = req.body;
+    try {
+        const value = await redis.get(`otp:${email}`);
+        if (!value) {
+            return res.status(400).json({message: 'OTP expired or invalid'});
+        }
+
+        const userData = JSON.parse(value);
+        if (userData.otp !== otp) {
+            return res.status(400).json({message: 'Invalid OTP'});
+        }
+
+        const newUser = new User({
+            username: userData.username,
+            email: userData.email,
+            password: userData.password,
+        });
+
+        await newUser.save();
+        await redis.del(`otp:${email}`); 
+
+        res.status(201).json({message: 'User registered successfully'});
+
+    } catch (error) {
+        console.error('Error in verify otp:', error);
         res.status(500).json({message: 'Internal server error'});
     }
 };
@@ -53,4 +95,4 @@ const login = async (req: Request, res: Response) => {
     }
 };
 
-export {signup, login}; 
+export {requestOtp,verifyOtp, login}; 
