@@ -11,7 +11,7 @@ export const uploadFile = async (req: Request, res: Response) => {
 		if (!files || files.length === 0) {
 			return res.status(400).json({ message: "No file provided" });
 		}
-		const userId = "68826268fef63e8ea4ba4e55";
+		const userId = req.user?.id;
 
 		const uploads = await Promise.all(
 			files.map(async (file) => {
@@ -41,7 +41,7 @@ export const uploadFile = async (req: Request, res: Response) => {
 
 export const getFiles = async (req: Request, res: Response) => {
 	try {
-		const userId = "68826268fef63e8ea4ba4e55";
+		const userId = req.user?.id;
 		const fileType = req.query.type as string;
 		const query: any = { user: userId };
 		if (fileType) {
@@ -57,7 +57,7 @@ export const getFiles = async (req: Request, res: Response) => {
 
 export const deleteFile = async (req: Request, res: Response) => {
 	try {
-		const userId = "68826268fef63e8ea4ba4e55";
+		const userId = req.user?.id;
 		const fileId = req.params.id;
 		const file = await FileModel.findOneAndDelete({
 			user: userId,
