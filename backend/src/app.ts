@@ -5,7 +5,13 @@ import fileRoutes from "./routes/file.routes";
 import cookieParser from "cookie-parser";
 
 const app  = express();
-app.use(cors());
+
+app.use(
+	cors({
+		origin: "http://localhost:3001",
+		credentials: true, 
+	})
+);
 app.use(express.json());
 app.use(cookieParser());
 app.use(express.urlencoded({ extended: true }));
