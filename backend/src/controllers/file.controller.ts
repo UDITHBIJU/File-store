@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import { uplooadToS3 } from "../services/s3.service";
 import { FileModel } from "../models/file.model";
 import { classifyFile } from "../utils/classify-file.util";
+import { deleteFromS3 } from "../services/s3.service";
 
 export const uploadFile = async (req: Request, res: Response) => {
 	try {
@@ -14,8 +15,8 @@ export const uploadFile = async (req: Request, res: Response) => {
 
 		const uploads = await Promise.all(
 			files.map(async (file) => {
-                const fileType = classifyFile(file.mimetype);
-				const result = await uplooadToS3(file,fileType, userId);
+				const fileType = classifyFile(file.mimetype);
+				const result = await uplooadToS3(file, fileType, userId);
 				return FileModel.create({
 					user: userId,
 					filename: file.originalname,
@@ -23,7 +24,7 @@ export const uploadFile = async (req: Request, res: Response) => {
 					url: result.url,
 					size: file.size,
 					contentType: file.mimetype,
-                    type:fileType
+					type: fileType,
 				});
 			})
 		);
@@ -34,6 +35,43 @@ export const uploadFile = async (req: Request, res: Response) => {
 		});
 	} catch (error) {
 		console.error("Error uploading file:", error);
+		res.status(500).json({ message: "Internal server error" });
+	}
+};
+
+export const getFiles = async (req: Request, res: Response) => {
+	try {
+		const userId = "68826268fef63e8ea4ba4e55";
+		const fileType = req.query.type as string;
+		const query: any = { user: userId };
+		if (fileType) {
+			query.type = fileType;
+		}
+		const files = await FileModel.find(query).sort({ createdAt: -1 });
+		res.status(200).json(files);
+	} catch (error) {
+		console.error("Error fetching files:", error);
+		res.status(500).json({ message: "Internal server error" });
+	}
+};
+
+export const deleteFile = async (req: Request, res: Response) => {
+	try {
+		const userId = "68826268fef63e8ea4ba4e55";
+		const fileId = req.params.id;
+		const file = await FileModel.findOneAndDelete({
+			user: userId,
+			_id: fileId,
+		});
+		if (!file) {
+			return res.status(404).json({ message: "File not found" });
+		}
+		await deleteFromS3(file.key);
+		await FileModel.deleteOne({ _id: file._id });
+
+		res.status(200).json({ message: "File deleted successfully" });
+	} catch (error) {
+		console.error("Error deleting file:", error);
 		res.status(500).json({ message: "Internal server error" });
 	}
 };

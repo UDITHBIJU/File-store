@@ -32,3 +32,12 @@ export const uplooadToS3 = async (
 		key: result.Key,
 	};
 };
+
+export const deleteFromS3 = async (key: string) => {
+    const params = {
+        Bucket: process.env.AWS_BUCKET_NAME || "file-store-s3",
+        Key: key,
+    };
+
+    await s3.deleteObject(params).promise();
+};
