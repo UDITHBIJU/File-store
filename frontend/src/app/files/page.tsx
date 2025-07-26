@@ -2,6 +2,8 @@
 
 import { useEffect, useState } from "react";
 import api from "@/lib/axios";
+import Sidebar from "@/components/Sidebar";
+
 
 interface FileType {
 	_id: string;
@@ -65,7 +67,10 @@ export default function FilesPage() {
 	};
 
 	return (
+		
+
 		<div className="max-w-5xl mx-auto mt-10 p-4">
+		<Sidebar/>
 			<div className="flex justify-between items-center mb-6">
 				<h2 className="text-2xl font-semibold">My Files</h2>
 				<select
@@ -125,5 +130,6 @@ export default function FilesPage() {
 				</tbody>
 			</table>
 		</div>
+	
 	);
 }

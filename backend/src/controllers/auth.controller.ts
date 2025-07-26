@@ -130,6 +130,25 @@ const login = async (req: Request, res: Response) => {
 	}
 };
 
+const logout = async (req: Request, res: Response) => {
+	const token = req.cookies.refreshToken;
+	if (!token) {
+		return res.status(401).json({ message: "No refresh token provided" });
+	}
+	try {
+		const payload = verifyRefreshToken(token);
+		await redis.del(`refresh:${payload.id}`);
+		res.clearCookie("refreshToken", {
+			httpOnly: true,
+			secure: process.env.NODE_ENV === "production",
+		});
+		res.status(200).json({ message: "Logout successful" });
+	} catch (error) {
+		console.error("Error during logout:", error);
+		res.status(500).json({ message: "Internal server error" });
+	}
+};
+
 const refreshToken = async (req: Request, res: Response) => {
 	const token = req.cookies.refreshToken;
 	if (!token) {
@@ -167,4 +186,5 @@ const refreshToken = async (req: Request, res: Response) => {
 		res.status(500).json({ message: "Internal server error" });
 	}
 };
-export { requestOtp, verifyOtp, login, refreshToken };
+	
+export { requestOtp, verifyOtp, login, refreshToken, logout };

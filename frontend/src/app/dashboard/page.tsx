@@ -1,6 +1,7 @@
 "use client";
 import { useState } from "react";
 import api from "@/lib/axios";
+import Sidebar from "@/components/Sidebar"; 
 
 export default function DashboardPage() {
 	const [files, setFiles] = useState<FileList | null>(null);
@@ -29,7 +30,10 @@ export default function DashboardPage() {
 	};
 
 	return (
+	<div className="flex min-h-screen">
+	<Sidebar/>
 		<div className="max-w-xl mx-auto mt-10 p-4">
+				
 			<h2 className="text-2xl font-semibold mb-4">Upload Files</h2>
 
 			<input
@@ -51,6 +55,7 @@ export default function DashboardPage() {
 			</button>
 
 			{msg && <p className="mt-4 text-sm text-gray-700">{msg}</p>}
+		</div>
 		</div>
 	);
 }

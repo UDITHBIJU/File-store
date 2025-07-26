@@ -1,8 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useState,useEffect } from "react";
 import api from "@/lib/axios";
 import {useRouter }from "next/navigation";
+
 
 export default function LoginPage() {
 	const [email, setEmail] = useState("");
@@ -11,6 +12,13 @@ export default function LoginPage() {
 
     const router = useRouter();
 
+	useEffect(() => {
+		const token = localStorage.getItem("accessToken");
+		if (token) {
+			router.replace("/dashboard");
+		}
+	}, [router]);
+	
 	const handleSubmit = async (e: React.FormEvent) => {
 		e.preventDefault();
 		try {
