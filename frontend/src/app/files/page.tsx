@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import api from "@/lib/axios";
 import Sidebar from "@/components/Sidebar";
-
+import requireAuth from "@/lib/requireAuth";
 
 interface FileType {
 	_id: string;
@@ -12,12 +12,11 @@ interface FileType {
 	uploadedAt: string;
 }
 
-export default function FilesPage() {
+function FilesPage() {
 	const [files, setFiles] = useState<FileType[]>([]);
 	const [filteredFiles, setFilteredFiles] = useState<FileType[]>([]);
 	const [filterType, setFilterType] = useState("all");
 	const [msg, setMsg] = useState("");
-
 
 	// Fetch all files initially
 	useEffect(() => {
@@ -29,9 +28,7 @@ export default function FilesPage() {
 		if (filterType === "all") {
 			setFilteredFiles(files);
 		} else {
-			setFilteredFiles(
-				files.filter((f) => f.type === filterType)
-			);
+			setFilteredFiles(files.filter((f) => f.type === filterType));
 		}
 	}, [filterType, files]);
 
@@ -53,7 +50,7 @@ export default function FilesPage() {
 		link.click();
 		document.body.removeChild(link);
 	};
-	
+
 	const handleDelete = async (id: string) => {
 		try {
 			await api.delete(`/files/${id}`);
@@ -67,10 +64,8 @@ export default function FilesPage() {
 	};
 
 	return (
-		
-
 		<div className="max-w-5xl mx-auto mt-10 p-4">
-		<Sidebar/>
+			<Sidebar />
 			<div className="flex justify-between items-center mb-6">
 				<h2 className="text-2xl font-semibold">My Files</h2>
 				<select
@@ -130,6 +125,6 @@ export default function FilesPage() {
 				</tbody>
 			</table>
 		</div>
-	
 	);
 }
+export default requireAuth(FilesPage);

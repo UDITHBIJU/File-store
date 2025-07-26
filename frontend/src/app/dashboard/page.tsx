@@ -2,8 +2,9 @@
 import { useState } from "react";
 import api from "@/lib/axios";
 import Sidebar from "@/components/Sidebar"; 
+import requireAuth from "@/lib/requireAuth";
 
-export default function DashboardPage() {
+function DashboardPage() {
 	const [files, setFiles] = useState<FileList | null>(null);
 	const [msg, setMsg] = useState("");
 
@@ -59,3 +60,4 @@ export default function DashboardPage() {
 		</div>
 	);
 }
+export default requireAuth(DashboardPage);
