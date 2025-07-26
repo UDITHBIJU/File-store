@@ -18,7 +18,7 @@ export default function LoginPage() {
 			router.replace("/dashboard");
 		}
 	}, [router]);
-	
+
 	const handleSubmit = async (e: React.FormEvent) => {
 		e.preventDefault();
 		try {
@@ -50,7 +50,7 @@ export default function LoginPage() {
 					type="password"
 					required
 				/>
-				<button type="submit" className="bg-green-600 text-white p-2 rounded">
+				<button type="submit" className="bg-green-600 text-white p-2 rounded cursor-pointer">
 					Login
 				</button>
 				{msg && <p className="text-sm text-gray-700">{msg}</p>}
@@ -59,7 +59,7 @@ export default function LoginPage() {
 				Don't have an account?{" "}
 				<button
 					onClick={() => router.push("/signup")}
-					className="text-blue-600 hover:underline"
+					className="text-blue-600 hover:underline cursor-pointer"
 				>
 					Sign up
 				</button>

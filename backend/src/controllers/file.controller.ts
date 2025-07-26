@@ -4,8 +4,9 @@ import { FileModel } from "../models/file.model";
 import { classifyFile } from "../utils/classify-file.util";
 import { deleteFromS3 } from "../services/s3.service";
 import { getSignedUrl } from "../services/s3.service";
+import { AuthenticatedRequest } from "../types/types"; 
 
-export const uploadFile = async (req: Request, res: Response) => {
+export const uploadFile = async (req: AuthenticatedRequest, res: Response) => {
 	try {
 		const files = req.files as Express.Multer.File[];
 
@@ -14,6 +15,10 @@ export const uploadFile = async (req: Request, res: Response) => {
 		}
 		const userId = req.user?.id;
 
+		if (!userId) {
+			return res.status(401).json({ message: "Unauthorized: No user ID" });
+		}
+		
 		const uploads = await Promise.all(
 			files.map(async (file) => {
 				const fileType = classifyFile(file.mimetype);
@@ -40,7 +45,7 @@ export const uploadFile = async (req: Request, res: Response) => {
 	}
 };
 
-export const getFiles = async (req: Request, res: Response) => {
+export const getFiles = async (req: AuthenticatedRequest, res: Response) => {
 	try {
 		const userId = req.user?.id;
 		const fileType = req.query.type as string;
@@ -56,7 +61,7 @@ export const getFiles = async (req: Request, res: Response) => {
 	}
 };
 
-export const deleteFile = async (req: Request, res: Response) => {
+export const deleteFile = async (req: AuthenticatedRequest, res: Response) => {
 	try {
 		const userId = req.user?.id;
 		const fileId = req.params.id;

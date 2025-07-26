@@ -102,7 +102,7 @@ export default function SignupPage() {
 
 				<button
 					type="submit"
-					className={`p-2 rounded text-white ${
+					className={`p-2 rounded text-white cursor-pointer ${
 						step === "form" ? "bg-blue-600" : "bg-green-600"
 					}`}
 				>
@@ -114,7 +114,7 @@ export default function SignupPage() {
 				Already have an account?{" "}
 				<button
 					onClick={() => router.push("/login")}
-					className="text-blue-600 hover:underline"
+					className="text-blue-600 hover:underline cursor-pointer"
 				>
 					Login
 				</button>

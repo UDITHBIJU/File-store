@@ -66,6 +66,7 @@ const verifyOtp = async (req: Request, res: Response) => {
 			httpOnly: true,
 			secure: process.env.NODE_ENV === "production",
 			maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+			sameSite: "none",
 		});
 
 		res.status(201).json({
@@ -113,6 +114,7 @@ const login = async (req: Request, res: Response) => {
 			httpOnly: true,
 			secure: process.env.NODE_ENV === "production",
 			maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+			sameSite: "none",
 		});
 
 		res.status(200).json({
@@ -137,10 +139,16 @@ const logout = async (req: Request, res: Response) => {
 	}
 	try {
 		const payload = verifyRefreshToken(token);
+		
+		if (!payload || typeof payload === "string" || !("id" in payload)) {
+			return res.status(403).json({ message: "Invalid refresh token" });
+		}
+
 		await redis.del(`refresh:${payload.id}`);
 		res.clearCookie("refreshToken", {
 			httpOnly: true,
 			secure: process.env.NODE_ENV === "production",
+			sameSite:"none" ,
 		});
 		res.status(200).json({ message: "Logout successful" });
 	} catch (error) {
@@ -156,6 +164,11 @@ const refreshToken = async (req: Request, res: Response) => {
 	}
 	try {
 		const payload = verifyRefreshToken(token);
+			
+		if (!payload || typeof payload === "string" || !("id" in payload)) {
+			return res.status(403).json({ message: "Invalid refresh token" });
+		}
+
 		const redisToken = await redis.get(`refresh:${payload.id}`);
 		if (!redisToken || redisToken !== token) {
 			return res
@@ -177,6 +190,7 @@ const refreshToken = async (req: Request, res: Response) => {
 			httpOnly: true,
 			secure: process.env.NODE_ENV === "production",
 			maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+			sameSite: "none",
 		});
 		res.json({
 			accessToken: newAccessToken,
