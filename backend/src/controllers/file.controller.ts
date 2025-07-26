@@ -3,6 +3,7 @@ import { uplooadToS3 } from "../services/s3.service";
 import { FileModel } from "../models/file.model";
 import { classifyFile } from "../utils/classify-file.util";
 import { deleteFromS3 } from "../services/s3.service";
+import { getSignedUrl } from "../services/s3.service";
 
 export const uploadFile = async (req: Request, res: Response) => {
 	try {
@@ -74,4 +75,12 @@ export const deleteFile = async (req: Request, res: Response) => {
 		console.error("Error deleting file:", error);
 		res.status(500).json({ message: "Internal server error" });
 	}
+};
+
+export const generateDownloadLink = async (req: Request, res: Response) => {
+	const file = await FileModel.findById(req.params.id);
+	if (!file) return res.status(404).json({ message: "File not found" });
+
+	const signedUrl = getSignedUrl(file.key);
+	return res.json({ url: signedUrl });
 };

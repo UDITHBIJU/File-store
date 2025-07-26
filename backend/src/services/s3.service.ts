@@ -41,3 +41,12 @@ export const deleteFromS3 = async (key: string) => {
 
     await s3.deleteObject(params).promise();
 };
+
+export const getSignedUrl = (key: string) => {
+	return s3.getSignedUrl("getObject", {
+		Bucket: process.env.AWS_BUCKET_NAME!,
+		Key: key,
+		Expires: 60, 
+		ResponseContentDisposition: "attachment", 
+});
+}

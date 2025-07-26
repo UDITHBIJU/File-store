@@ -1,17 +1,14 @@
 "use client";
 
 import { useState } from "react";
-import { useAuth } from "@/context/AuthContext";
 import api from "@/lib/axios";
 import {useRouter }from "next/navigation";
-
 
 export default function LoginPage() {
 	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");
 	const [msg, setMsg] = useState("");
 
-    const {setUser} = useAuth();
     const router = useRouter();
 
 	const handleSubmit = async (e: React.FormEvent) => {
@@ -19,7 +16,7 @@ export default function LoginPage() {
 		try {
 			const res = await api.post("/auth/login", { email, password });
             localStorage.setItem("accessToken", res.data.accessToken);
-            setUser(res.data.user)
+
             router.push("/dashboard")
 		} catch (err: any) {
 			setMsg(err?.response?.data?.message || "Login failed");
@@ -50,6 +47,15 @@ export default function LoginPage() {
 				</button>
 				{msg && <p className="text-sm text-gray-700">{msg}</p>}
 			</form>
+			<p className="mt-4 text-sm text-center">
+				Don't have an account?{" "}
+				<button
+					onClick={() => router.push("/signup")}
+					className="text-blue-600 hover:underline"
+				>
+					Sign up
+				</button>
+			</p>
 		</div>
 	);
 }
