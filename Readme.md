@@ -130,8 +130,10 @@ AWS_ACCESS_KEY_ID=your_aws_access_key_id
 AWS_SECRET_ACCESS_KEY=your_aws_secret_access_key
 AWS_BUCKET_NAME=your_s3_bucket_name
 AWS_REGION=us-east-1
-```
-Create a `.env` file in the frontend directory with the following variables:
 
+Create a `.env` file in the frontend directory with the following variables:
+ 
 NEXT_PUBLIC_API_URL=
+```
+
 ---
